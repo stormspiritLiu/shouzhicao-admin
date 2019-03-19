@@ -19,7 +19,7 @@ return [
     // 应用地址
     'app_host'               => '',
     // 应用调试模式
-    'app_debug'              => false,
+    'app_debug'              => true,
     // 应用Trace
     'app_trace'              => false,
     // 是否支持多模块
@@ -105,7 +105,7 @@ return [
     // 使用注解路由
     'route_annotation'       => false,
     // 域名根，如thinkphp.cn
-    'url_domain_root'        => '',
+    'url_domain_root'        => 'yiyoncms.com',
     // 是否自动转换URL中的控制器和操作名
     'url_convert'            => true,
     // 默认的访问控制器层
@@ -143,4 +143,7 @@ return [
     // 异常处理handle类 留空使用 \think\exception\Handle
     'exception_handle'       => '',
 
+    //自定义配置
+    'sys_name' =>'百名中医-手指操',
+    'sys_names' =>'手指操管理系统',
 ];
