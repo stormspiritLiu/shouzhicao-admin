@@ -1,0 +1,73 @@
+{extend name='layout'}
+{block name='content'}
+<table class="layui-hide" id="user" lay-filter="user"></table>
+{/block}
+{block name='js'}
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#user',
+            url:'{:url("userList")}',
+            toolbar: '#toolbarDemo',
+            title: '用户数据表',
+            cellMinWidth: 60,
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field:'id', title:'ID', fixed: 'left', unresize: true, sort: true},
+                {field:'name', title:'用户名',  edit: 'text'},
+                {field:'phoneNum', title:'手机号', edit: 'text', sort: true, width: 150},
+                {field:'level', title:'等级',sort: true},
+                {field:'energy', title:'体力',sort: true},
+                {field:'healthyBeans', title:'健康豆',  sort: true},
+                {field:'experience', title:'经验值'},
+                {field:'diamond', title:'钻石数量', sort: true},
+                {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'}
+            ]],
+            page: true,
+            limit: 10 //每页默认显示的数量
+        });
+
+        //头工具栏事件
+        table.on('toolbar(user)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            layer.alert(JSON.stringify(data));
+        });
+
+        //监听行工具事件
+        table.on('tool(user)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>
+{/block}
