@@ -38,4 +38,17 @@ class User extends Base
             ->useSoftDelete('delete_time',date("Y-m-d H:i:s" ,time()))
             ->delete();
     }
+
+    public function edit(){
+        $id = input('id');
+        if(request()->isPost()){
+            $user = new UserModel();
+            $user->save(input('post.'),['id'=>$id]);
+            return json(['code' => 1, 'msg' => '编辑成功!']);
+        }
+
+        $user = Db::name('user')->where('id',$id)->find();
+        $this->assign('user', $user);
+        return $this->fetch();
+    }
 }

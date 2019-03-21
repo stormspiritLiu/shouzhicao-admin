@@ -1,0 +1,95 @@
+{extend name='layout'}
+{block name='content'}
+<fieldset class="layui-elem-field layui-field-title">
+    <legend>用户信息编辑</legend>
+</fieldset>
+<form class="layui-form" lay-filter="userInformation" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户名称</label>
+        <div class="layui-inline">
+            <input type="text" name="name" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-inline">
+                <input type="tel" name="phoneNum" lay-verify="required|phone" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户等级</label>
+        <div class="layui-inline">
+            <input type="text" name="level" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户体力</label>
+        <div class="layui-inline">
+            <input type="text" name="energy" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">健康豆</label>
+        <div class="layui-inline">
+            <input type="text" name="healthyBeans" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">经验值</label>
+        <div class="layui-inline">
+            <input type="text" name="experience" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">钻石</label>
+        <div class="layui-inline">
+            <input type="text" name="diamond" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="submit">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+{/block}
+{block name='js'}
+<script>
+    layui.use(['form'], function () {
+        let form = layui.form, layer = layui.layer, $ = layui.$;
+
+        //监听提交
+        form.on('submit(submit)', function (data) {
+            $.post(window.location.href ,data.field,function (res) {
+                if(res.code === 1){
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                }else {
+                    layer.msg('未知错误', {icon: 2, time: 1000});
+                }
+                window.location.href = 'index/user/index';
+            });
+        });
+
+        //表单初始赋值
+        form.val('userInformation', {
+            "name": "{$user['name']}",
+            "phoneNum": "{$user['phoneNum']}",
+            "level": "{$user['level']}",
+            "energy": "{$user['energy']}",
+            "healthyBeans": "{$user['healthyBeans']}",
+            "experience": "{$user['experience']}",
+            "diamond": "{$user['diamond']}"
+        })
+    });
+</script>
+{/block}

@@ -73,7 +73,7 @@
             console.log(obj);
             if(obj.event === 'del'){
                 layer.confirm('真的删除行该用户么', function(index){
-                    $.post('{:url("delete")}',{id : obj.data.id},function (res) {
+                    $.post('{:url("delete")}',{id : data.id},function (res) {
                         console.log(res);
                         if(res === 1){
                             obj.del();
@@ -83,15 +83,7 @@
 
                 });
             } else if(obj.event === 'edit'){
-                layer.prompt({
-                    formType: 2
-                    ,value: data.email
-                }, function(value, index){
-                    obj.update({
-                        email: value
-                    });
-                    layer.close(index);
-                });
+                window.location.href = '{:url("edit")}?id=' + data.id;
             }
         });
 
