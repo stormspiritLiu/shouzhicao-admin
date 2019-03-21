@@ -13,6 +13,7 @@ class User extends Model
 {
     public function pagingQuery($list_rows,$page){
         return User::order('id')
+            ->where('delete_time',null)
             ->paginate(array('list_rows' => $list_rows, 'page' => $page))
             ->toArray();
     }

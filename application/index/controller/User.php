@@ -9,6 +9,7 @@
 namespace app\index\controller;
 
 use app\index\model\User as UserModel;
+use think\Db;
 class User extends Base
 {
     public function index(){
@@ -27,5 +28,13 @@ class User extends Base
         $data = input('post.');
         $user = new UserModel();
         return $user->ban($data['id']);
+    }
+
+    public function delete(){
+        $id = input('id');
+        return Db::name('user')
+            ->where('id', $id)
+            ->useSoftDelete('delete_time',date("Y-m-d H:i:s" ,time()))
+            ->delete();
     }
 }

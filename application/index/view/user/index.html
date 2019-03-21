@@ -51,19 +51,25 @@
 
         //头工具栏事件
         table.on('toolbar(user)', function(obj){
-            let checkStatus = table.checkStatus(obj.config.id);
-            let data = checkStatus.data;
-            layer.alert(JSON.stringify(data));
+            // let checkStatus = table.checkStatus(obj.config.id);
+            // let data = checkStatus.data;
+            // layer.alert(JSON.stringify(data));
         });
 
         //监听行工具事件
         table.on('tool(user)', function(obj){
             let data = obj.data;
-            //console.log(obj)
+            console.log(obj);
             if(obj.event === 'del'){
-                layer.confirm('真的删除行么', function(index){
-                    obj.del();
-                    layer.close(index);
+                layer.confirm('真的删除行该用户么', function(index){
+                    $.post('{:url("delete")}',{id : obj.data.id},function (res) {
+                        console.log(res);
+                        if(res === 1){
+                            obj.del();
+                            layer.close(index);
+                        }
+                    })
+
                 });
             } else if(obj.event === 'edit'){
                 layer.prompt({
@@ -81,7 +87,7 @@
         //监听锁定操作
         form.on('checkbox(lockDemo)', function(obj){
             let that = this, data = {'id' : this.value};
-            $.post('{:url("user/lock")}',data,function(res){
+            $.post('{:url("lock")}',data,function(res){
                 console.log(res);
                 if(res === true){
                     layer.tips(that.value + ' ' + that.name + '：'+ obj.elem.checked, obj.othis);
