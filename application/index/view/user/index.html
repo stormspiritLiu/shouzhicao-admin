@@ -27,8 +27,8 @@
             cols: [[
                 {type: 'checkbox', fixed: 'left'},
                 {field:'id', title:'ID', fixed: 'left', unresize: true, sort: true},
-                {field:'name', title:'用户名',  edit: 'text'},
-                {field:'phoneNum', title:'手机号', edit: 'text', sort: true, width: 150},
+                {field:'name', title:'用户名'},
+                {field:'phoneNum', title:'手机号', width: 150},
                 {field:'level', title:'等级',sort: true},
                 {field:'energy', title:'体力',sort: true},
                 {field:'healthyBeans', title:'健康豆',  sort: true},
@@ -37,7 +37,8 @@
                 {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'}
             ]],
             page: true,
-            limit: 10 //每页默认显示的数量
+            limit: 10, //每页默认显示的数量
+            limits:[10,20,50,100]
         });
 
         //头工具栏事件

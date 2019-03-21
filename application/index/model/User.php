@@ -8,11 +8,12 @@
 
 namespace app\index\model;
 
-use think\Db;
 use think\Model;
 class User extends Model
 {
-    public function findAll(){
-        return User::all();
+    public function pagingQuery($list_rows,$page){
+        return User::order('id')
+            ->paginate(array('list_rows' => $list_rows, 'page' => $page))
+            ->toArray();
     }
 }
