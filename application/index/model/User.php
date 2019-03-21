@@ -16,4 +16,14 @@ class User extends Model
             ->paginate(array('list_rows' => $list_rows, 'page' => $page))
             ->toArray();
     }
+
+    public function ban($id){
+        $user = User::where('id',$id)->find();
+        if(!$user) {
+            return -1;
+        }else {
+            $user->lock = $user->lock ? 0 : 1;
+            return $user->save();
+        }
+    }
 }

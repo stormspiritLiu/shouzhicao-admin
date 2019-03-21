@@ -14,9 +14,15 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
+<script type="text/html" id="checkboxTpl">
+    <input type="checkbox" name="lock" value="{{d.id}}" title="锁定" lay-filter="lockDemo"
+           {{ d.lock == 1 ? 'checked' : '' }}
+    >
+</script>
+
 <script>
     layui.use('table', function(){
-        var table = layui.table;
+        let table = layui.table,form = layui.form,$=layui.$;
 
         table.render({
             elem: '#user',
@@ -28,13 +34,15 @@
                 {type: 'checkbox', fixed: 'left'},
                 {field:'id', title:'ID', fixed: 'left', unresize: true, sort: true},
                 {field:'name', title:'用户名'},
-                {field:'phoneNum', title:'手机号', width: 150},
+                {field:'phoneNum', title:'手机号', width: 130},
                 {field:'level', title:'等级',sort: true},
                 {field:'energy', title:'体力',sort: true},
                 {field:'healthyBeans', title:'健康豆',  sort: true},
                 {field:'experience', title:'经验值'},
-                {field:'diamond', title:'钻石数量', sort: true},
-                {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'}
+                {field:'diamond', title:'钻石数量',width:100, sort: true},
+                {field:'lock', title:'是否锁定', width:110, templet: '#checkboxTpl', unresize: true},
+                {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
+
             ]],
             page: true,
             limit: 10, //每页默认显示的数量
@@ -43,14 +51,14 @@
 
         //头工具栏事件
         table.on('toolbar(user)', function(obj){
-            var checkStatus = table.checkStatus(obj.config.id);
-            var data = checkStatus.data;
+            let checkStatus = table.checkStatus(obj.config.id);
+            let data = checkStatus.data;
             layer.alert(JSON.stringify(data));
         });
 
         //监听行工具事件
         table.on('tool(user)', function(obj){
-            var data = obj.data;
+            let data = obj.data;
             //console.log(obj)
             if(obj.event === 'del'){
                 layer.confirm('真的删除行么', function(index){
@@ -68,6 +76,18 @@
                     layer.close(index);
                 });
             }
+        });
+
+        //监听锁定操作
+        form.on('checkbox(lockDemo)', function(obj){
+            let that = this, data = {'id' : this.value};
+            $.post('{:url("user/lock")}',data,function(res){
+                console.log(res);
+                if(res === true){
+                    layer.tips(that.value + ' ' + that.name + '：'+ obj.elem.checked, obj.othis);
+                }
+            });
+
         });
     });
 </script>

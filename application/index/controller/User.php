@@ -22,4 +22,10 @@ class User extends Base
         $data = $user->pagingQuery($limit,$page);
         return $result = ['code' => 0, 'msg' => '获取成功!', 'data' => $data['data'], 'count' => $data['total']];
     }
+
+    public function lock(){
+        $data = input('post.');
+        $user = new UserModel();
+        return $user->ban($data['id']);
+    }
 }
