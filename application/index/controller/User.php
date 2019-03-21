@@ -19,8 +19,9 @@ class User extends Base
     public function userList(){
         $page = input('page') ? input('page') : 1;
         $limit = input('limit') ? input('limit') : 10;
+        $key = input('key');
         $user = new UserModel();
-        $data = $user->pagingQuery($limit,$page);
+        $data = $user->pagingQuery($limit,$page,$key);
         return $result = ['code' => 0, 'msg' => '获取成功!', 'data' => $data['data'], 'count' => $data['total']];
     }
 

@@ -4,9 +4,10 @@
 {/block}
 {block name='js'}
 <script type="text/html" id="toolbarDemo">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+    <div class="layui-inline" id="inputParent">
+        <input class="layui-input" name="key" id="key" autocomplete="off" placeholder="搜索用户">
     </div>
+    <button class="layui-btn" data-type="reload" id="search" lay-event="search">搜索</button>
 </script>
 
 <script type="text/html" id="barDemo">
@@ -49,11 +50,21 @@
             limits:[10,20,50,100]
         });
 
-        //头工具栏事件
+        //头工具栏事件,需要把搜索事件放在这里/把搜索框放在table外面，否则reload之后click事件不绑定
         table.on('toolbar(user)', function(obj){
-            // let checkStatus = table.checkStatus(obj.config.id);
-            // let data = checkStatus.data;
-            // layer.alert(JSON.stringify(data));
+            switch(obj.event) {
+                case 'search':
+                    let key = $('#key').val();
+                    console.log(key);
+                    if($.trim(key)==='') {
+                        layer.msg('请输入关键字！',{icon:0});
+                        return;
+                    }
+                    table.reload('user',{
+                        where: {key: key}
+                    });
+                    break;
+            }
         });
 
         //监听行工具事件
