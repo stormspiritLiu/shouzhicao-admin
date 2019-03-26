@@ -1,0 +1,90 @@
+{extend name='layout'}
+{block name='content'}
+<fieldset class="layui-elem-field layui-field-title">
+    <legend>游戏信息编辑</legend>
+</fieldset>
+<form class="layui-form" lay-filter="gameInformation" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">游戏名称</label>
+        <div class="layui-inline">
+            <input type="text" name="name" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">游戏等级</label>
+        <div class="layui-inline">
+            <input type="text" name="level" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">通关经验值</label>
+        <div class="layui-inline">
+            <input type="text" name="experience" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">难度</label>
+        <div class="layui-inline">
+            <input type="text" name="difficulty" lay-verify="difficulty" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-inline">
+            <input type="text" name="price" lay-verify="price" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="submit">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+{/block}
+{block name='js'}
+<script>
+    layui.use(['form'], function () {
+        let form = layui.form, layer = layui.layer, $ = layui.$;
+
+        //自定义验证规则
+        form.verify({
+            difficulty: function(value){
+                if(parseInt(value) < 1 || parseInt(value) > 3 ){
+                    return '难度取1~3的值（1：简单，2：中等，3：困难）';
+                }
+            },
+            price: [
+            /^((([0-9]+[\.]?[0-9]{1,2})|[1-9])|0)$/
+            ,'价格需非负的两位小数'
+            ]
+        });
+
+        //监听提交
+        form.on('submit(submit)', function (data) {
+            $.post(window.location.href ,data.field,function (res) {
+                if(res.code === 1){
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                }else {
+                    layer.msg('未知错误', {icon: 2, time: 1000});
+                }
+                window.location.href = 'index/game/index';
+            });
+        });
+
+        //表单初始赋值
+        form.val('gameInformation', {
+            "name": "{$game['name']}",
+            "level": "{$game['level']}",
+            "experience": "{$game['experience']}",
+            "difficulty": "{$game['difficulty']}",
+            "price": "{$game['price']}",
+        })
+    });
+</script>
+{/block}

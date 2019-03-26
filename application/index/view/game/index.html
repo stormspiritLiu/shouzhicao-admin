@@ -1,11 +1,11 @@
 {extend name='layout'}
 {block name='content'}
-<table class="layui-hide" id="user" lay-filter="user"></table>
+<table class="layui-hide" id="game" lay-filter="game"></table>
 {/block}
 {block name='js'}
 <script type="text/html" id="toolbarDemo">
     <div class="layui-inline" id="inputParent">
-        <input class="layui-input" name="key" id="key" autocomplete="off" placeholder="搜索用户">
+        <input class="layui-input" name="key" id="key" autocomplete="off" placeholder="搜索游戏">
     </div>
     <button class="layui-btn" data-type="reload" id="search" lay-event="search">搜索</button>
 </script>
@@ -15,35 +15,29 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
-<script type="text/html" id="checkboxTpl">
-    <input type="checkbox" name="lock" value="{{d.id}}" title="锁定" lay-filter="lockDemo"
-           {{ d.lock == 1 ? 'checked' : '' }}
-    >
+<script type="text/html" id="instructionTemplet">
+    <button class="layui-btn layui-btn-xs layui-btn-normal" value="{{d.id}}">查看</button>
 </script>
 
 <script>
     layui.use('table', function(){
-        let table = layui.table,form = layui.form,$=layui.$;
+        let table = layui.table,layer = layui.layer,$=layui.$;
 
         table.render({
-            elem: '#user',
-            url:'{:url("userList")}',
+            elem: '#game',
+            url:'{:url("gameList")}',
             toolbar: '#toolbarDemo',
-            title: '用户数据表',
+            title: '游戏数据表',
             cellMinWidth: 60,
             cols: [[
-                // {type: 'checkbox', fixed: 'left'},
                 {field:'id', title:'ID', fixed: 'left', unresize: true, sort: true},
-                {field:'name', title:'用户名'},
-                {field:'phoneNum', title:'手机号', width: 130},
+                {field:'name', title:'游戏名'},
                 {field:'level', title:'等级',sort: true},
-                {field:'energy', title:'体力',sort: true},
-                {field:'healthyBeans', title:'健康豆',  sort: true},
                 {field:'experience', title:'经验值'},
-                {field:'diamond', title:'钻石数量',width:100, sort: true},
-                {field:'lock', title:'是否锁定', width:110, templet: '#checkboxTpl', unresize: true},
+                {field:'difficulty', title:'难度', sort: true},
+                {field:'price', title:'价格', unresize: true},
+                {field:'instruction', title:'指令集', width:85, templet: '#instructionTemplet',event: 'instruction', unresize: true},
                 {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
-
             ]],
             page: true,
             limit: 10, //每页默认显示的数量
@@ -51,7 +45,7 @@
         });
 
         //头工具栏事件,需要把搜索事件放在这里/把搜索框放在table外面，否则reload之后click事件不绑定
-        table.on('toolbar(user)', function(obj){
+        table.on('toolbar(game)', function(obj){
             switch(obj.event) {
                 case 'search':
                     let key = $('#key').val();
@@ -60,7 +54,7 @@
                         layer.msg('请输入关键字！',{icon:0});
                         return;
                     }
-                    table.reload('user',{
+                    table.reload('game',{
                         where: {key: key}
                     });
                     break;
@@ -68,11 +62,11 @@
         });
 
         //监听行工具事件
-        table.on('tool(user)', function(obj){
+        table.on('tool(game)', function(obj){
             let data = obj.data;
             console.log(obj);
             if(obj.event === 'del'){
-                layer.confirm('真的删除行该用户么', function(index){
+                layer.confirm('真的删除行该游戏么', function(index){
                     $.post('{:url("delete")}',{id : data.id},function (res) {
                         console.log(res);
                         if(res === 1){
@@ -84,20 +78,16 @@
                 });
             } else if(obj.event === 'edit'){
                 window.location.href = '{:url("edit")}?id=' + data.id;
+            } else if(obj.event === 'instruction') {
+                layer.open({
+                    type: 2,
+                    title: '指令集',
+                    content: "{:url('instruction')}?id="+ data.id,
+                    area: '400px'
+                })
             }
         });
 
-        //监听锁定操作
-        form.on('checkbox(lockDemo)', function(obj){
-            let that = this, data = {'id' : this.value};
-            $.post('{:url("lock")}',data,function(res){
-                console.log(res);
-                if(res === true){
-                    layer.tips(that.value + ' ' + that.name + '：'+ obj.elem.checked, obj.othis);
-                }
-            });
-
-        });
     });
 </script>
 {/block}
