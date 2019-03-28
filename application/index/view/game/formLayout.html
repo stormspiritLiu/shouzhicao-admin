@@ -1,0 +1,60 @@
+{extend name='layout'}
+{block name='content'}
+<fieldset class="layui-elem-field layui-field-title">
+    <legend>{block name="legend"} {/block}</legend>
+</fieldset>
+<form class="layui-form" lay-filter="gameInformation" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">游戏名称</label>
+        <div class="layui-inline">
+            <input type="text" name="name" autocomplete="off" class="layui-input" required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">游戏等级</label>
+        <div class="layui-inline">
+            <input type="text" name="level" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">通关经验值</label>
+        <div class="layui-inline">
+            <input type="text" name="experience" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">难度</label>
+        <div class="layui-inline">
+            <input type="text" name="difficulty" lay-verify="difficulty" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-inline">
+            <input type="text" name="price" lay-verify="price" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">音乐</label>
+        <div class="layui-input-inline">
+            <select name="music" lay-filter="music" required="required">
+                {volist name="musicList" id="vo"}
+                <option value="{$vo.id}">{$vo.name}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="submit">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+{/block}

@@ -9,6 +9,7 @@
 namespace app\index\controller;
 
 use app\index\model\Game as GameModel;
+use app\index\model\Music as MusicModel;
 use think\Db;
 
 class Game extends Base
@@ -46,13 +47,62 @@ class Game extends Base
     public function edit(){
         $id = input('id');
         if(request()->isPost()){
-            $game = new GameModel();
-            $game->save(input('post.'),['id'=>$id]);
+            $data = input('post.');
+            Db::name('game')
+                ->where('id', $id)
+                ->update([
+                    'name'           => $data['name'],
+                    'level'          => $data['level'],
+                    'experience'     => $data['experience'],
+                    'difficulty'     => $data['difficulty'],
+                    'price'          => $data['price'],
+                ]);
+            if( Db::name('game_music')->where('gameId',$id)->count() > 0){
+                //更新游戏与音乐的关系
+                Db::name('game_music')
+                    ->where('gameId',$id)
+                    ->update([
+                        'musicId' => $data['music']
+                    ]);
+            }else{
+                //新增关系
+                Db::name('game_music')
+                    ->insert([
+                        'gameId'    => $id,
+                        'musicId'   => $data['music']
+                    ]);
+            }
+
             return json(['code' => 1, 'msg' => '编辑成功!']);
         }
 
         $game = Db::name('game')->where('id',$id)->find();
-        $this->assign('game', $game);
+        $musicList = Db::name('music')->all();
+        $musicId = Db::name('game_music')->where('gameId',$id)->find();
+
+        $this->assign([
+            'game'=> $game,
+            'musicList' => $musicList,
+            'musicId' => $musicId
+        ]);
         return $this->fetch();
+    }
+
+    public function newGame(){
+        if(request()->isPost()){
+            $data = input('post.');
+            unset($data['music']);
+            $gameId = Db::name('game')->insertGetId($data);
+            if(!empty($gameId)){
+                Db::name('game_music')->insert([
+                    'gameId'    => $gameId,
+                    'musicId'   => input('post.music')
+                ]);
+                return json(['code' => 1, 'msg' => '创建成功!']);
+            }
+        }
+
+        $musicList = Db::name('music')->all();
+        return $this->assign('musicList',$musicList)->fetch();
     }
 }

@@ -146,4 +146,5 @@ return [
     //自定义配置
     'sys_name' =>'百名中医-手指操',
     'sys_names' =>'手指操管理系统',
+    'music_root_path' => 'http://shouzhi.yiyon.com.cn'
 ];

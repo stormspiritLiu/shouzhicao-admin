@@ -1,6 +1,6 @@
 {extend name='game/formLayout'}
-{block name='legend'}
-游戏信息编辑
+{block name="legend"}
+创建新游戏
 {/block}
 
 {block name='js'}
@@ -16,8 +16,8 @@
                 }
             },
             price: [
-            /^((([0-9]+[\.]?[0-9]{1,2})|[1-9])|0)$/
-            ,'价格需非负的两位小数'
+                /^((([0-9]+[\.]?[0-9]{1,2})|[1-9])|0)$/
+                ,'价格需非负的两位小数'
             ]
         });
 
@@ -33,15 +33,6 @@
             });
         });
 
-        //表单初始赋值
-        form.val('gameInformation', {
-            "name": "{$game['name']}",
-            "level": "{$game['level']}",
-            "experience": "{$game['experience']}",
-            "difficulty": "{$game['difficulty']}",
-            "price": "{$game['price']}",
-            'music': "{$musicId['musicId']}"
-        });
     });
 </script>
 {/block}

@@ -8,6 +8,7 @@
         <input class="layui-input" name="key" id="key" autocomplete="off" placeholder="搜索游戏">
     </div>
     <button class="layui-btn" data-type="reload" id="search" lay-event="search">搜索</button>
+    <button class="layui-btn" lay-event="new">新增游戏</button>
 </script>
 
 <script type="text/html" id="barDemo">
@@ -36,6 +37,8 @@
                 {field:'experience', title:'经验值'},
                 {field:'difficulty', title:'难度', sort: true},
                 {field:'price', title:'价格', unresize: true},
+                {field:'music', title:'音乐', style:'cursor: pointer;', event:'music', unresize: true},
+                {field:'musicPath',hide : true},
                 {field:'instruction', title:'指令集', width:85, templet: '#instructionTemplet',event: 'instruction', unresize: true},
                 {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
             ]],
@@ -57,6 +60,9 @@
                     table.reload('game',{
                         where: {key: key}
                     });
+                    break;
+                case 'new':
+                    window.location.href = "{:url('newGame')}";
                     break;
             }
         });
@@ -85,6 +91,12 @@
                     content: "{:url('instruction')}?id="+ data.id,
                     area: '400px'
                 })
+            } else if(obj.event === 'music'){
+                let src = "{:config('music_root_path')}" + obj.data['musicPath'];
+                layer.open({
+                   type: 1,
+                   content: '<video controls="" autoplay="" name="media"><source src='+ src + '></video>'
+                });
             }
         });
 

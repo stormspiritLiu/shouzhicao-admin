@@ -12,9 +12,13 @@ use think\Model;
 class Game extends Model
 {
     public function pagingQuery($list_rows,$page,$key){
-        return Game::order('id')
+        return Game::order('g.id')
+            ->alias('g')
+            ->leftJoin('game_music gm','g.id = gm.gameId')
+            ->leftJoin('music m','gm.musicId = m.id')
             ->where('delete_time',null)
-            ->where('name|id', 'like', "%" . $key . "%")
+            ->where('g.name|g.id', 'like', "%" . $key . "%")
+            ->field('g.id,g.name,g.level,g.experience,g.difficulty,g.price,m.name as music,m.path as musicPath')
             ->paginate(array('list_rows' => $list_rows, 'page' => $page))
             ->toArray();
     }
