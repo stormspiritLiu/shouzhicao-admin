@@ -15,7 +15,6 @@ class Admin extends Model
         $user=Db::name('admin')->where('name',$data['name'])->find();
         if($user){
             if($user['password'] == md5($data['password'])){
-                session('name',$user['name']);
                 session('admin',$user['id']);
                 return 1; //信息正确
             }else{

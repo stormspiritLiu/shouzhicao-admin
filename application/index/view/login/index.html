@@ -35,7 +35,7 @@
                         <div class="layui-form-item">
                             <input type="text" name="captcha" id="captcha" lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
                             <div class="captcha">
-                                <img src="{:captcha_src()}" alt="captcha" onclick="this.src=this.src+'?'+'id='+Math.random()"/>
+                                <img src="{:captcha_src()}" alt="captcha" onclick="this.src='{:captcha_src()}'"/>
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -65,9 +65,8 @@
                         location.href = res.url;
                     });
                 }else{
-                    $('#captcha').val('');
                     layer.msg(res.msg, {icon: 2, anim: 6, time: 1000});
-                    $('.captcha img').attr('src','{:captcha_src()}?id='+Math.random());
+                    $("#captcha").click();
                 }
             });
             return false;

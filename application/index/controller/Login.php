@@ -10,6 +10,7 @@ namespace app\index\controller;
 
 use app\index\model\Admin;
 use think\Controller;
+use think\facade\Session;
 
 class Login extends Controller
 {
@@ -33,5 +34,12 @@ class Login extends Controller
 
     public function check($code){
         return captcha_check($code);
+    }
+
+    public function logout(){
+        if(Session::has('admin')){
+            Session::delete('admin');
+        }
+        return $this->fetch('index');
     }
 }
