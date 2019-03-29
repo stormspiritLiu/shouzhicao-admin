@@ -1,10 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{extend name='layout'}
+{block name='content'}
+<table class="layui-hide" id="music" lay-filter="music"></table>
+{/block}
+{block name='js'}
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-inline" id="inputParent">
+        <input class="layui-input" name="key" id="key" autocomplete="off" placeholder="搜索音乐">
+    </div>
+    <button class="layui-btn" data-type="reload" id="search" lay-event="search">搜索</button>
+    <button type="button" class="layui-btn layui-btn-normal" id="selectFile">选择文件</button>
+    <button type="button" class="layui-btn" id="submit">开始上传</button>
+</script>
 
-</body>
-</html>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    layui.use(['table','upload'], function(){
+        let table = layui.table,layer = layui.layer,$=layui.$,upload = layui.upload;
+
+        table.render({
+            elem: '#music',
+            url:'{:url("musicList")}',
+            toolbar: '#toolbarDemo',
+            title: '音乐数据表',
+            cellMinWidth: 60,
+            cols: [[
+                {field:'id', title:'ID', fixed: 'left', unresize: true, sort: true},
+                {field:'name', title:'音乐名'},
+                {field:'path', title:'音乐路径'},
+                {field:'time', title:'音乐时长'},
+                // {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
+            ]],
+            page: true,
+            limit: 10, //每页默认显示的数量
+            limits:[10,20,50,100]
+        });
+
+        //头工具栏事件,需要把搜索事件放在这里/把搜索框放在table外面，否则reload之后click事件不绑定
+        table.on('toolbar(music)', function(obj){
+            switch(obj.event) {
+                case 'search':
+                    let key = $('#key').val();
+                    console.log(key);
+                    if($.trim(key)==='') {
+                        layer.msg('请输入关键字！',{icon:0});
+                        return;
+                    }
+                    table.reload('music',{
+                        where: {key: key}
+                    });
+                    break;
+            }
+        });
+
+
+        //音乐上传
+        let data = {};
+        upload.render({
+            elem: '#selectFile',
+            url: "{:url('upload')}",
+            auto: false,
+            accept: 'audio',
+            bindAction: '#submit',
+            size: 50*1024,
+            before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    data = file;
+                    console.log(file);
+                    // $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
+                });
+            },
+            done: function(res){
+                console.log(res)
+            }
+        });
+    });
+</script>
+{/block}
