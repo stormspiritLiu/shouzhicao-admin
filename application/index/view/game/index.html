@@ -92,7 +92,7 @@
                     area: '400px'
                 })
             } else if(obj.event === 'music'){
-                let src = "{:config('music_root_path')}" + obj.data['musicPath'];
+                let src = 'http://' + window.location.hostname +'/music/' + obj.data['musicPath'];
                 layer.open({
                    type: 1,
                    content: '<video controls="" autoplay="" name="media"><source src='+ src + '></video>'
