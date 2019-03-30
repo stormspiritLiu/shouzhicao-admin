@@ -55,6 +55,13 @@ class Music extends Base
             // 上传失败获取错误信息
             return json(['code' => 0, 'msg' => '文件为空']);
         }
+    }
 
+    public function delete(){
+        $id = input('id');
+        return Db::name('music')
+            ->where('id', $id)
+            ->useSoftDelete('delete_time',date("Y-m-d H:i:s" ,time()))
+            ->delete();
     }
 }

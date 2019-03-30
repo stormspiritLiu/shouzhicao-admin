@@ -13,6 +13,7 @@ class Music extends Model
 {
     public function pagingQuery($list_rows,$page,$key){
         return Music::order('id')
+            ->where('delete_time',null)
             ->where('name|id', 'like', "%" . $key . "%")
             ->paginate(array('list_rows' => $list_rows, 'page' => $page))
             ->toArray();

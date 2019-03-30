@@ -13,7 +13,7 @@
 </script>
 
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="play">播放</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
@@ -32,7 +32,7 @@
                 {field:'name', title:'音乐名'},
                 {field:'path', title:'音乐路径'},
                 {field:'time', title:'音乐时长'},
-                // {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
+                {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
             ]],
             page: true,
             limit: 10, //每页默认显示的数量
@@ -53,6 +53,30 @@
                         where: {key: key}
                     });
                     break;
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(music)', function(obj){
+            let data = obj.data;
+            console.log(obj);
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行该音乐么', function(index){
+                    $.post('{:url("delete")}',{id : data.id},function (res) {
+                        console.log(res);
+                        if(res === 1){
+                            obj.del();
+                            layer.close(index);
+                        }
+                    })
+
+                });
+            } else if(obj.event === 'play'){
+                let src = 'http://' + window.location.hostname +'/music/' + obj.data['path'];
+                layer.open({
+                    type: 1,
+                    content: '<video controls="" autoplay="" name="media"><source src='+ src + '></video>'
+                });
             }
         });
 
