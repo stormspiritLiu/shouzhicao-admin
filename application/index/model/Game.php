@@ -16,9 +16,9 @@ class Game extends Model
             ->alias('g')
             ->leftJoin('game_music gm','g.id = gm.gameId')
             ->leftJoin('music m','gm.musicId = m.id')
-            ->where('delete_time',null)
+            ->where('g.delete_time',null)
             ->where('g.name|g.id', 'like', "%" . $key . "%")
-            ->field('g.id,g.name,g.level,g.experience,g.difficulty,g.price,m.name as music,m.path as musicPath')
+            ->field('g.id,g.name,g.level,g.award,g.experience,g.difficulty,g.price,m.name as music,m.path as musicPath')
             ->paginate(array('list_rows' => $list_rows, 'page' => $page))
             ->toArray();
     }
