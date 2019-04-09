@@ -34,7 +34,7 @@ return [
     'taglib_end'   => '}',
 
     'tpl_replace_string' =>[
-        '__PUBLIC__' => $_SERVER['REQUEST_SCHEME']. "://".$_SERVER['HTTP_HOST'].rtrim(dirname($_SERVER['SCRIPT_NAME'])),
+        '__PUBLIC__' => '',
         '__INDEX__' => '/index'
     ],
 ];
