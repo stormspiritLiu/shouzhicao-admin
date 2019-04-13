@@ -77,7 +77,7 @@ class Game extends Base
         }
 
         $game = Db::name('game')->where('id',$id)->find();
-        $musicList = Db::name('music')->all();
+        $musicList = Db::name('music')->where('delete_time',null)->select();
         $musicId = Db::name('game_music')->where('gameId',$id)->find();
 
         $this->assign([
@@ -102,7 +102,7 @@ class Game extends Base
             }
         }
 
-        $musicList = Db::name('music')->all();
+        $musicList = Db::name('music')->where('delete_time',null)->select();
         return $this->assign('musicList',$musicList)->fetch();
     }
 }
