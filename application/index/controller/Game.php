@@ -9,7 +9,6 @@
 namespace app\index\controller;
 
 use app\index\model\Game as GameModel;
-use app\index\model\Music as MusicModel;
 use think\Db;
 
 class Game extends Base
@@ -39,6 +38,7 @@ class Game extends Base
         $id = input('id');
         $data = Db::name('game_instruction')
             ->where('gameId',$id)
+            ->order('id')
             ->select();
 
         return $this->assign('list',$data)->fetch();
@@ -104,5 +104,30 @@ class Game extends Base
 
         $musicList = Db::name('music')->where('delete_time',null)->select();
         return $this->assign('musicList',$musicList)->fetch();
+    }
+
+    public function upload(){
+        $data = input('post.');
+        $file = request()->file('file');
+        // 移动到框架应用根目录/public/instruction/ 目录下
+        if(!empty($file)){
+            $info = $file->move('../public/instruction');
+            if($info){
+                $filePath =  $info->getSaveName();
+                $path = $_SERVER['DOCUMENT_ROOT'].'/instruction/'.$filePath;
+                $file = fopen($path, 'r');
+                while(!feof($file)) {
+                    $row = fgets($file);
+                    $row =  str_replace(PHP_EOL, '', $row);
+                    if($row){
+                        $insert_data = ['gameId' => $data['id'], 'instruction' => $row];
+                        Db::name('game_instruction')->insert($insert_data);
+                    }
+                }
+
+                return json(['code' => 1, 'msg' => '上传成功']);
+            }
+        }
+        return json(['code' => 0, 'msg' => '文件不存在!']);
     }
 }

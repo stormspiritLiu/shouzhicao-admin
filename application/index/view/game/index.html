@@ -17,12 +17,13 @@
 </script>
 
 <script type="text/html" id="instructionTemplet">
-    <button class="layui-btn layui-btn-xs layui-btn-normal" value="{{d.id}}">查看</button>
+    <button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="show_instruction" value="{{d.id}}">查看</button>
+    <button class="layui-btn layui-btn-xs layui-btn-warm" lay-event="upload_instruction"  value="{{d.id}}">上传</button>
 </script>
 
 <script>
-    layui.use('table', function(){
-        let table = layui.table,layer = layui.layer,$=layui.$;
+    layui.use(['table','upload'], function(){
+        let table = layui.table,layer = layui.layer,$=layui.$, upload = layui.upload;
 
         table.render({
             elem: '#game',
@@ -40,12 +41,38 @@
                 {field:'price', title:'价格', unresize: true},
                 {field:'music', title:'音乐', style:'cursor: pointer;', event:'music', unresize: true},
                 {field:'musicPath',hide : true},
-                {field:'instruction', title:'指令集', width:85, templet: '#instructionTemplet',event: 'instruction', unresize: true},
+                {field:'instruction', title:'指令集', width:120, templet: '#instructionTemplet', unresize: true},
                 {fixed: 'right', title:'操作', toolbar: '#barDemo',width:150, align: 'center'},
             ]],
             page: true,
             limit: 10, //每页默认显示的数量
-            limits:[10,20,50,100]
+            limits:[10,20,50,100],
+            done: function(res, curr, count){
+                $(".layui-btn-warm").each(function () {
+                    var that = $(this);
+                    upload.render({
+                        elem: this,
+                        url: "{:url('upload')}",
+                        accept: 'file',
+                        ext: "xls|xlsx|csv",
+                        data: {
+                            id : function(){return that.val();}
+                        },
+                        before: function(obj){
+                            //预读本地文件示例，不支持ie8
+                            obj.preview(function(index, file, result){
+                                console.log(file);
+                            });
+                        },
+                        done: function(res){
+                            console.log(res);
+                            if(res.code === 1){
+                                layer.msg('上传成功');
+                            }
+                        }
+                    })
+                })
+            }
         });
 
         //头工具栏事件,需要把搜索事件放在这里/把搜索框放在table外面，否则reload之后click事件不绑定
@@ -72,34 +99,42 @@
         table.on('tool(game)', function(obj){
             let data = obj.data;
             console.log(obj);
-            if(obj.event === 'del'){
-                layer.confirm('真的删除行该游戏么', function(index){
-                    $.post('{:url("delete")}',{id : data.id},function (res) {
-                        console.log(res);
-                        if(res === 1){
-                            obj.del();
-                            layer.close(index);
-                        }
-                    })
-
-                });
-            } else if(obj.event === 'edit'){
-                window.location.href = '{:url("edit")}?id=' + data.id;
-            } else if(obj.event === 'instruction') {
-                layer.open({
-                    type: 2,
-                    title: '指令集',
-                    content: "{:url('instruction')}?id="+ data.id,
-                    area: '400px'
-                })
-            } else if(obj.event === 'music'){
-                let src = 'http://' + window.location.hostname +'/music/' + obj.data['musicPath'];
-                layer.open({
-                   type: 1,
-                   content: '<video controls="" autoplay="" name="media"><source src='+ src + '></video>'
-                });
+            switch (obj.event) {
+                case "del":
+                    layer.confirm('真的删除行该游戏么', function(index){
+                        $.post('{:url("delete")}',{id : data.id},function (res) {
+                            console.log(res);
+                            if(res === 1){
+                                obj.del();
+                                layer.close(index);
+                            }
+                        })
+                    });
+                    break;
+                case "edit":
+                    window.location.href = '{:url("edit")}?id=' + data.id;
+                    break;
+                case "music":
+                    let src = 'http://' + window.location.hostname +'/music/' + obj.data['musicPath'];
+                    layer.open({
+                        type: 1,
+                        content: '<video controls="" autoplay="" name="media"><source src='+ src + '></video>'
+                    });
+                    break;
+                case "show_instruction" :
+                    layer.open({
+                        type: 2,
+                        title: '指令集',
+                        content: "{:url('instruction')}?id="+ data.id,
+                        area: '400px'
+                    });
+                    break;
+                case "upload_instruction" :
+                    break;
             }
         });
+
+
 
     });
 </script>
