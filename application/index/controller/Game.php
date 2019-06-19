@@ -10,6 +10,7 @@ namespace app\index\controller;
 
 use app\index\model\Game as GameModel;
 use think\Db;
+use PHPExcel_IOFactory;
 
 class Game extends Base
 {
@@ -107,22 +108,72 @@ class Game extends Base
     }
 
     public function upload(){
-        $data = input('post.');
+        $input = input('post.');
         $file = request()->file('file');
         // 移动到框架应用根目录/public/instruction/ 目录下
         if(!empty($file)){
             $info = $file->move('../public/instruction');
             if($info){
-                $filePath =  $info->getSaveName();
-                $path = $_SERVER['DOCUMENT_ROOT'].'/instruction/'.$filePath;
-                $file = fopen($path, 'r');
-                while(!feof($file)) {
-                    $row = fgets($file);
-                    $row =  str_replace(PHP_EOL, '', $row);
-                    if($row){
-                        $insert_data = ['gameId' => $data['id'], 'instruction' => $row];
-                        Db::name('game_instruction')->insert($insert_data);
+                $saveName =  $info->getSaveName();
+                $path = $_SERVER['DOCUMENT_ROOT'].'/instruction/'.$saveName;
+//                $file = fopen($path, 'r');
+//                while(!feof($file)) {
+//                    $row = fgets($file);
+//                    $row =  str_replace(PHP_EOL, '', $row);
+//                    if($row){
+//                        $insert_data = ['gameId' => $data['id'], 'instruction' => $row];
+//                        Db::name('game_instruction')->insert($insert_data);
+//                    }
+//                }
+                $suffix = $info->getExtension();
+                //判断哪种类型
+                if($suffix=="xlsx"){
+                    $reader = PHPExcel_IOFactory::createReader('Excel2007');
+                }else{
+                    $reader = PHPExcel_IOFactory::createReader('Excel5');
+                }
+                //载入excel文件
+                $excel = $reader->load($path,$encode = 'utf-8');
+                //读取第一张表
+                $sheet = $excel->getSheet(0);
+                //获取总行数
+                $row_num = $sheet->getHighestRow();
+                //获取总列数
+                $col_num = $sheet->getHighestColumn();
+
+                $data = [];
+
+                for($i = 1; $i <= $row_num; $i++) {
+                    $data[$i] = $sheet->getCell("A".$i)->getValue();
+                    $length = strlen($data[$i]);
+                    if($length != 20){
+                        return json(['code' => 0, 'msg' => '第'.$i.'行指令长度不等于20']);
                     }
+                    $head = substr($data[$i],0,4);
+                    if($head != 'aa07'){
+                        return json(['code' => 0, 'msg' => '第'.$i.'行指令起始不等于aa07']);
+                    }
+                    $lightId = substr($data[$i],4,2);
+                    if($lightId < '00' || $lightId > '09'){
+                        return json(['code' => 0, 'msg' => '第'.$i.'行指令灯ID不在00~09中']);
+                    }
+                    $startTime = substr($data[$i],6,6);
+                    if($startTime < '000000' || $startTime > '595999'){
+                        return json(['code' => 0, 'msg' => '第'.$i.'行指令起始时间不正确']);
+                    }
+                    $endTime = substr($data[$i],12,6);
+                    if($endTime < '000000' || $endTime > '595999'){
+                        return json(['code' => 0, 'msg' => '第'.$i.'行指令结束时间不正确']);
+                    }
+                    $end = substr($data[$i],18,2);
+                    if($end != 'ff'){
+                        return json(['code' => 0, 'msg' => '第'.$i.'行指令结束不等于ff']);
+                    }
+                }
+
+                for($i = 1; $i <= $row_num; $i++) {
+                    $insert_data = ['gameId' => $input['id'], 'instruction' => $data[$i]];
+                    Db::name('game_instruction')->insert($insert_data);
                 }
 
                 return json(['code' => 1, 'msg' => '上传成功']);

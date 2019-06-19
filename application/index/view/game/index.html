@@ -68,6 +68,8 @@
                             console.log(res);
                             if(res.code === 1){
                                 layer.msg('上传成功');
+                            } else {
+                                layer.msg(res.msg);
                             }
                         }
                     })
