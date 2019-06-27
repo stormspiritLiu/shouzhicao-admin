@@ -54,6 +54,7 @@ class Game extends Base
                 ->update([
                     'name'           => $data['name'],
                     'level'          => $data['level'],
+                    'small_level'    => $data['small_level'],
                     'experience'     => $data['experience'],
                     'difficulty'     => $data['difficulty'],
                     'price'          => $data['price'],
